@@ -1,74 +1,61 @@
-# javascript-shin-ichiba-ranking-game-sample
+# niconama-game-sorting
 
-**javascript-shin-ichiba-ranking-game-sample**はJavaScriptでAkashicのゲームを作る際のサンプルプロジェクトです。
+![カプセル魚くん](image/male_active.png)カプセル魚くん![カプセル魚くん](image/female_active.png)を左右のエリアに振り分けるゲームです。時間内に多く処理し、精度が高いほどいいスコアが出ます。
 
-## 利用方法
+## セットアップ方法
 
- `javascript-shin-ichiba-ranking-game-sample` を利用するにはNode.jsが必要です。
+このリポジトリを開発するには、以下の手順に従ってください。
 
-初回のみ、以下のコマンドを実行して、ビルドに必要なパッケージをインストールしてください。
-この作業は `javascript-shin-ichiba-ranking-game-sample` を新しく生成するごとに必要です。
+### NPMの依存関係をインストールする
+
+開発には`npm`が必要です。
+npmについてはインターネットで豊富に情報がありますので割愛します。
+
+npmを実行できる環境が用意できたら、以下のコマンドを実行して依存パッケージをインストールしてください。
 
 ```sh
-npm install
+npm i
 ```
 
-### 動作確認方法
+### 素材を配置する
 
-以下のどちらかを実行後、ブラウザで `http://localhost:3000/game/` にアクセスすることでゲームを実行できます。
+再配布周りの制約がある素材（特にオーディオアセット）はリポジトリに含んでおりません。
 
-* `npm start`
-* `npm install -g @akashic/akashic-cli` 後、 `akashic sandbox .`
-
-また、マルチプレイゲームの動作確認は `akashic-cli-serve` を利用します。以下のどちらかを実行後、ブラウザで `http://localhost:3300` にアクセスすることでゲームを実行できます。
-
-* `npm run start:multi`
-* `npm install -g @akashic/akashic-cli` 後、 `akashic serve .`
-
-### テンプレートの使い方
-
-* ゲーム部分を作成する場合は、 `script/main.js` を編集してください。
-  * 基本的に`script/_bootstrap.js`を編集する必要はありません。
-* このテンプレートでは `script/main.js` の `main` 関数の引数`param`に以下の値が新たに付与されています。
-  * `param.sessionParameter`: [セッションパラメーター](https://akashic-games.github.io/guide/ranking.html#session-parameters)
-* ランキングモードに対応したニコニコ新市場コンテンツの作り方の詳細については、[こちら](https://akashic-games.github.io/guide/ranking.html)を参照してください。
-
-### アセットの更新方法
-
-各種アセットを追加したい場合は、それぞれのアセットファイルを以下のディレクトリに格納します。
-
-* 画像アセット: `image`
-* スクリプトアセット: `script`
-* テキストアセット: `text`
-* オーディオアセット: `audio`
-
-これらのアセットを追加・変更したあとに `akashic scan asset` をすると、アセットの変更内容をもとに `game.json` を書き換えることができます。
-
-### npm モジュールの追加・削除
-
-`javascript-shin-ichiba-ranking-game-sample` でnpmモジュールを利用する場合、このディレクトリで `akashic install <package_name>` することで npm モジュールを追加することができます。
-
-また `akashic uninstall <package_name>` すると npm モジュールを削除することができます。
-
-## エクスポート方法
-
-`javascript-shin-ichiba-ranking-game-sample` をエクスポートするときは以下のコマンドを利用します。
-
-### htmlファイルのエクスポート
-
-`akashic export html -o game` のコマンドを利用することで `game` ディレクトリにエクスポートすることができます。
-
-`game/index.html` をブラウザで開くと単体動作させることができます。
-
-### zipファイルのエクスポート
-
-`akashic export zip -o game.zip -s` のコマンドを利用することで `game.zip` という名前のzipファイルを出力できます。
-
-## テスト方法
-
-以下のコマンドで [ESLint](https://github.com/eslint/eslint "ESLint")を使ったLintが実行されます。
-スクリプトアセット内にES5構文に反する記述がある場合エラーを返します。
+しかし、アセットが存在しないとゲームを実行した際にエラーになってしまうので、代わりにダミーデータを配置するスクリプトを用意しています。
 
 ```sh
-npm run lint
+npm run prepare-dummy
+```
+
+このスクリプトを利用した場合、ゲームを遊んでも無音になってしまいますが、エラーなどは出ないはずです。
+
+### gitフックをセットアップする
+
+もし実際にコードの変更を行い、gitにコミットする場合は以下のコマンドを実行してください。
+
+```sh
+npm run prepare-git
+```
+
+これによりhuskyがセットアップされ、コミット時に自動でlint, test及びフォーマットが行われるようになります。
+
+### 開発サービスを実行する
+
+その後、開発を開始するには以下のコマンドを実行してください。
+このコマンドが実行されている間、`localhost:3000/game/`でゲームがホスティングされます。
+
+また、ファイルの変更も追跡され、typescriptのビルドやアセットのgame.jsへの登録が自動的に実行されます。
+
+```sh
+npm run develop
+```
+
+手動でビルド等のコマンドを実行することもできます。全てのコマンドは`package.json`を参照してください。
+
+## Web版をデプロイする
+
+備忘録です。多分自分以外使うことはないので気にしないでください
+
+```sh
+npx wrangler pages deploy web --project-name capsule-fish-sorting --branch main
 ```

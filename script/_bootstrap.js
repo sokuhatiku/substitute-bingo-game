@@ -1,3 +1,5 @@
+"use strict";
+// 通常このファイルを編集する必要はありません。ゲームの処理は main.js に記述してください
 const main_1 = require("./main");
 module.exports = (originalParam) => {
     const param = {};
@@ -10,7 +12,8 @@ module.exports = (originalParam) => {
     param.random = g.game.random;
     const limitTickToWait = 3; // セッションパラメーターが来るまでに待つtick数
     const scene = new g.Scene({
-        game: g.game
+        game: g.game,
+        name: "_bootstrap",
     });
     // セッションパラメーターを受け取ってゲームを開始します
     scene.onMessage.add((msg) => {
@@ -20,17 +23,17 @@ module.exports = (originalParam) => {
                 param.random = new g.XorshiftRandomGenerator(msg.data.parameters.randomSeed);
             }
             g.game.popScene();
-            main_1.main(param);
+            (0, main_1.main)(param);
         }
     });
     scene.onLoad.add(() => {
         let currentTickCount = 0;
-        scene.onUpdate.add(() => {
+        scene.onUpdate.add(function () {
             currentTickCount++;
             // 待ち時間を超えた場合はゲームを開始します
             if (currentTickCount > limitTickToWait) {
                 g.game.popScene();
-                main_1.main(param);
+                (0, main_1.main)(param);
             }
         });
     });

@@ -1,1 +1,8 @@
 node_modules
+/script
+/game
+/web
+coverage
+game.zip
+/audio/*.m4a
+/audio/*.ogg

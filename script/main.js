@@ -1,108 +1,164 @@
-
-exports.main = void 0;
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.main = main;
+const akashic_timeline_1 = require("@akashic-extension/akashic-timeline");
+const assetLoader_1 = require("./assetLoader");
+const bingoCell_1 = require("./game/bingoCell");
+const niconamaGameBridge_1 = require("./niconamaGameBridge");
 function main(param) {
+    let applicationTimeLimit = Infinity;
+    if (param.sessionParameter.totalTimeLimit) {
+        applicationTimeLimit = param.sessionParameter.totalTimeLimit;
+    }
+    const niconama = new niconamaGameBridge_1.NiconamaGameBridge();
     const scene = new g.Scene({
         game: g.game,
-        // このシーンで利用するアセットのIDを列挙し、シーンに通知します
-        assetIds: ["player", "shot", "se"]
+        assetPaths: [...assetLoader_1.allAssets],
     });
-    let time = 60; // 制限時間
-    if (param.sessionParameter.totalTimeLimit) {
-        time = param.sessionParameter.totalTimeLimit; // セッションパラメータで制限時間が指定されたらその値を使用します
-    }
-    // 市場コンテンツのランキングモードでは、g.game.vars.gameState.score の値をスコアとして扱います
-    g.game.vars.gameState = { score: 0 };
+    const assetLoader = new assetLoader_1.AssetLoader(scene);
+    const font = new g.DynamicFont({
+        game: g.game,
+        fontFamily: "sans-serif",
+        size: 15
+    });
     scene.onLoad.add(() => {
-        // ここからゲーム内容を記述します
-        // 各アセットオブジェクトを取得します
-        const playerImageAsset = scene.asset.getImageById("player");
-        const shotImageAsset = scene.asset.getImageById("shot");
-        const seAudioAsset = scene.asset.getAudioById("se");
-        // プレイヤーを生成します
-        const player = new g.Sprite({
-            scene: scene,
-            src: playerImageAsset,
-            width: playerImageAsset.width,
-            height: playerImageAsset.height
-        });
-        // プレイヤーの初期座標を、画面の中心に設定します
-        player.x = (g.game.width - player.width) / 2;
-        player.y = (g.game.height - player.height) / 2;
-        player.onUpdate.add(() => {
-            // 毎フレームでY座標を再計算し、プレイヤーの飛んでいる動きを表現します
-            // ここではMath.sinを利用して、時間経過によって増加するg.game.ageと組み合わせて
-            player.y = (g.game.height - player.height) / 2 + Math.sin(g.game.age % (g.game.fps * 10) / 4) * 10;
-            // プレイヤーの座標に変更があった場合、 modified() を実行して変更をゲームに通知します
-            player.modified();
-        });
-        scene.append(player);
-        // フォントの生成
-        const font = new g.DynamicFont({
-            game: g.game,
-            fontFamily: "sans-serif",
-            size: 48
-        });
-        // スコア表示用のラベル
-        const scoreLabel = new g.Label({
-            scene: scene,
-            text: "SCORE: 0",
-            font: font,
-            fontSize: font.size / 2,
-            textColor: "black"
-        });
-        scene.append(scoreLabel);
-        // 残り時間表示用ラベル
-        const timeLabel = new g.Label({
-            scene: scene,
-            text: "TIME: 0",
-            font: font,
-            fontSize: font.size / 2,
-            textColor: "black",
-            x: 0.65 * g.game.width
-        });
-        scene.append(timeLabel);
-        // 画面をタッチしたとき、SEを鳴らします
-        scene.onPointDownCapture.add(() => {
-            // 制限時間以内であればタッチ1回ごとにSCOREに+1します
-            if (time > 0) {
-                g.game.vars.gameState.score++;
-                scoreLabel.text = "SCORE: " + g.game.vars.gameState.score;
-                scoreLabel.invalidate();
-            }
-            seAudioAsset.play();
-            // プレイヤーが発射する弾を生成します
-            const shot = new g.Sprite({
-                scene: scene,
-                src: shotImageAsset,
-                width: shotImageAsset.width,
-                height: shotImageAsset.height
-            });
-            // 弾の初期座標を、プレイヤーの少し右に設定します
-            shot.x = player.x + player.width;
-            shot.y = player.y;
-            shot.onUpdate.add(() => {
-                // 毎フレームで座標を確認し、画面外に出ていたら弾をシーンから取り除きます
-                if (shot.x > g.game.width)
-                    shot.destroy();
-                // 弾を右に動かし、弾の動きを表現します
-                shot.x += 10;
-                // 変更をゲームに通知します
-                shot.modified();
-            });
-            scene.append(shot);
-        });
-        const updateHandler = () => {
-            if (time <= 0) {
-                scene.onUpdate.remove(updateHandler); // カウントダウンを止めるためにこのイベントハンドラを削除します
-            }
-            // カウントダウン処理
-            time -= 1 / g.game.fps;
-            timeLabel.text = "TIME: " + Math.ceil(time);
-            timeLabel.invalidate();
+        const layers = {
+            background: createLayerEntity(scene),
+            foreground: createLayerEntity(scene),
+            paricles: createLayerEntity(scene),
+            ui: createLayerEntity(scene),
+            debugUi: createLayerEntity(scene),
         };
-        scene.onUpdate.add(updateHandler);
-        // ここまでゲーム内容を記述します
+        // ビンゴシートが開く順番を決める配列（ゲーム全体で同じ順番になるよう、ゲームの乱数を使う）
+        const openArray = generateBingoArray(g.game.random);
+        // ユーザーシート生成用の配列（ローカルの乱数を使う）
+        const userArray = generateBingoArray(g.game.localRandom);
+        // この時点でスコアは決定するので、事前に計算してしまう
+        const score = calculateScore(openArray, userArray);
+        // ニコ生ゲームにあらかじめスコアを通知
+        niconama.noticeScore(score);
+        console.log("Calculated Score:", score);
+        // 以降はビジュアル面の実装
+        // ビンゴシートのセルを生成
+        const cells = [];
+        const reverseCells = {}; // 数字からセルを逆引きするマップ
+        for (let i = 0; i < 5; i++) {
+            for (let j = 0; j < 5; j++) {
+                const number = userArray[i * 5 + j];
+                const isCenter = (i === 2 && j === 2);
+                const cell = new bingoCell_1.BingoCell({
+                    scene: scene,
+                    parent: layers.foreground,
+                    font: font,
+                    x: i * 60,
+                    y: j * 60,
+                    width: 60,
+                    height: 60,
+                    cssColor: "white",
+                    label: isCenter ? "FREE" : number.toString(),
+                });
+                cells.push(cell);
+                if (isCenter) {
+                    cell.check(); // フリーマスは最初から開いている
+                }
+                else {
+                    reverseCells[number] = cell;
+                }
+            }
+        }
+        // 1秒ごとにビンゴシートが開いていく仮アニメーション
+        const timeline = new akashic_timeline_1.Timeline(scene);
+        const enntityForAnimation = new g.E({
+            scene: scene,
+            parent: layers.paricles,
+        });
+        openArray.forEach((number, index) => {
+            timeline.create(enntityForAnimation).wait(1000 * index).call(() => {
+                if (number in reverseCells) {
+                    reverseCells[number].check();
+                }
+            });
+        });
     });
     g.game.pushScene(scene);
 }
-exports.main = main;
+function createLayerEntity(scene) {
+    const entity = new g.E({
+        scene: scene,
+        width: g.game.width,
+        height: g.game.height,
+        x: 0,
+        y: 0,
+        parent: scene,
+    });
+    return entity;
+}
+/**
+ * 1から75までの数字をシャッフルして並べる
+ * @returns シャッフルされた数字の配列（長さは75）
+ */
+function generateBingoArray(generator) {
+    const array = [];
+    for (let i = 1; i <= 75; i++) {
+        array.push(i);
+    }
+    // Fisher-Yatesシャッフル
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(generator.generate() * (i + 1));
+        const tmp = array[i];
+        array[i] = array[j];
+        array[j] = tmp;
+    }
+    return array;
+}
+/**
+ * 与えられたビンゴシートの開いた順番とユーザーのシートを比較してスコアを計算する
+ * @param gameArray ビンゴシートが開く順番の配列
+ * @param userArray ユーザーのビンゴシートの配列
+ * @returns 計算されたスコア
+ */
+function calculateScore(gameArray, userArray) {
+    // スコア計算方法：
+    // gameArrayから値を取り出し、userArrayの該当マスを塗りつぶすことを1ターンとする
+    // 最初にビンゴした時のターン数を取得する
+    // ニコ生ゲームの仕様上、スコアが大きいほどランキング上位になるため、100からターン数を引いた値をスコアとする
+    // userArrayの先頭25個がビンゴカード（index 12は中央のフリーマス）
+    // 各数字がカード上のどの位置にあるかのマップを作る
+    const numberToIndex = {};
+    for (let i = 0; i < 25; i++) {
+        if (i === 12)
+            continue; // フリーマス
+        numberToIndex[userArray[i]] = i;
+    }
+    // 5x5の開放状態（フリーマスは最初から開いている）
+    const opened = [];
+    for (let i = 0; i < 25; i++) {
+        opened.push(i === 12);
+    }
+    // ビンゴ判定用のライン定義（行5本 + 列5本 + 対角線2本 = 12本）
+    const lines = [];
+    for (let i = 0; i < 5; i++) {
+        // 行
+        lines.push([i * 5, i * 5 + 1, i * 5 + 2, i * 5 + 3, i * 5 + 4]);
+        // 列
+        lines.push([i, i + 5, i + 10, i + 15, i + 20]);
+    }
+    // 対角線
+    lines.push([0, 6, 12, 18, 24]);
+    lines.push([4, 8, 12, 16, 20]);
+    for (let turn = 0; turn < gameArray.length; turn++) {
+        const num = gameArray[turn];
+        if (num in numberToIndex) {
+            opened[numberToIndex[num]] = true;
+        }
+        // ビンゴ判定
+        for (let i = 0; i < lines.length; i++) {
+            const line = lines[i];
+            if (opened[line[0]] && opened[line[1]] && opened[line[2]] && opened[line[3]] && opened[line[4]]) {
+                return 100 - (turn + 1);
+            }
+        }
+    }
+    // ビンゴしなかった場合（理論上起こらないはずだが安全のため）
+    return 0;
+}

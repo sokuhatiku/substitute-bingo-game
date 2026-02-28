@@ -1,20 +1,52 @@
 {
-  "name": "javascript-shin-ichiba-ranking-game-sample",
+  "name": "niconama-game-sorting",
   "private": true,
   "version": "0.1.0",
-  "description": "",
+  "description": "カプセル魚くん仕分けゲームの開発プロジェクト",
   "scripts": {
+    "build": "rimraf ./script && tsc && akashic scan asset script",
+    "build:watch": "chokidar \"src/**/*.ts\" -c \"npm run build\"",
+    "update": "akashic scan asset && akashic-cli-scan globalScripts",
+    "update:watch": "chokidar audio image text -c \"npm run update\"",
+    "lint": "eslint src -c eslint.config.js",
+    "lint:fix": "eslint src -c eslint.config.js --fix",
     "start": "akashic sandbox .",
-    "start:multi": "akashic serve .",
-    "lint": "eslint \"script/**/*.js\" --fix",
-    "test": "npm run lint"
+    "export": "akashic export zip --nicolive --force",
+    "export-web": "akashic export html --magnify --bundle --hash-filename --output ./web",
+    "develop": "run-p -l start build:watch update:watch",
+    "test": "jest",
+    "audioconv": "complete-audio",
+    "prepare-dummy": "node ./setup/setup-dummy.cjs",
+    "prepare-git": "husky"
   },
-  "keywords": [],
-  "author": "",
-  "license": "",
+  "author": "Sokuhatiku",
+  "license": "MIT",
   "devDependencies": {
-    "@akashic/akashic-cli": "^3.0.6",
+    "@akashic-extension/akashic-timeline": "^3.2.1",
+    "@akashic/akashic-cli": "^2.17.23",
+    "@akashic/akashic-engine": "^3.6.0",
+    "@akashic/complete-audio": "^2.0.1",
+    "@akashic/eslint-config": "^3.0.0",
+    "@eslint/js": "^9.12.0",
+    "@stylistic/eslint-plugin-ts": "^2.10.1",
+    "@types/eslint__js": "^8.42.3",
+    "@types/jest": "^29.5.13",
+    "@typescript-eslint/eslint-plugin": "^8.12.2",
+    "@typescript-eslint/parser": "^8.12.2",
+    "chokidar-cli": "^3.0.0",
     "eslint": "^9.12.0",
-    "globals": "^17.0.0"
+    "eslint-plugin-import": "^2.31.0",
+    "globals": "^15.11.0",
+    "husky": "^9.1.6",
+    "jest": "^29.1.1",
+    "npm": "^10.9.0",
+    "npm-run-all": "^4.1.5",
+    "prettier": "3.3.3",
+    "rimraf": "^6.0.0",
+    "ts-jest": "^29.0.3",
+    "typescript": ">=4.7.4 <5.6.0"
+  },
+  "dependencies": {
+    "@akashic-extension/akashic-label": "^3.1.0"
   }
 }
