@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.main = main;
+const al = require("@akashic-extension/akashic-label");
 const akashic_timeline_1 = require("@akashic-extension/akashic-timeline");
 const assetLoader_1 = require("./assetLoader");
 const bingoCell_1 = require("./game/bingoCell");
@@ -68,17 +69,37 @@ function main(param) {
         }
         // 1秒ごとにビンゴシートが開いていく仮アニメーション
         const timeline = new akashic_timeline_1.Timeline(scene);
-        const enntityForAnimation = new g.E({
+        const announcementLabel = new al.Label({
             scene: scene,
-            parent: layers.paricles,
+            parent: layers.ui,
+            x: 320,
+            y: 20,
+            font: font,
+            text: "",
+            fontSize: 24,
+            width: 200,
         });
-        openArray.forEach((number, index) => {
-            timeline.create(enntityForAnimation).wait(1000 * index).call(() => {
-                if (number in reverseCells) {
-                    reverseCells[number].check();
-                }
-            });
-        });
+        // 数値発表アニメーション
+        let turn = 0;
+        timeline.create(announcementLabel, { loop: true })
+            .call(() => {
+            if (turn === openArray.length) {
+                announcementLabel.text = "Game Over";
+                announcementLabel.invalidate();
+                return;
+            }
+            else if (turn > openArray.length) {
+                return;
+            }
+            const next = openArray[turn];
+            announcementLabel.text = `Next: ${next}\nTurn: ${turn + 1}`;
+            announcementLabel.invalidate();
+            if (next in reverseCells) {
+                reverseCells[next].check();
+            }
+            turn++;
+        })
+            .wait(1000);
     });
     g.game.pushScene(scene);
 }

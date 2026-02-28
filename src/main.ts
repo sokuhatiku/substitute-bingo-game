@@ -1,3 +1,4 @@
+import * as al from "@akashic-extension/akashic-label";
 import { Timeline } from "@akashic-extension/akashic-timeline";
 import { allAssets, AssetLoader } from "./assetLoader";
 import { BingoCell } from "./game/bingoCell";
@@ -77,17 +78,38 @@ export function main(param: GameMainParameterObject): void {
 
 		// 1秒ごとにビンゴシートが開いていく仮アニメーション
 		const timeline = new Timeline(scene);
-		const enntityForAnimation = new g.E({
+		const announcementLabel = new al.Label({
 			scene: scene,
-			parent: layers.paricles,
+			parent: layers.ui,
+			x: 320,
+			y: 20,
+			font: font,
+			text: "",
+			fontSize: 24,
+			width: 200,
 		});
-		openArray.forEach((number, index) => {
-			timeline.create(enntityForAnimation).wait(1000 * index).call(() => {
-				if (number in reverseCells) {
-					reverseCells[number].check();
+
+		// 数値発表アニメーション
+		let turn = 0;
+		timeline.create(announcementLabel, { loop: true })
+			.call(() => {
+				if (turn === openArray.length) {
+					announcementLabel.text = "Game Over";
+					announcementLabel.invalidate();
+					return;
+				} else if (turn > openArray.length) {
+					return;
 				}
-			});
-		});
+				const next = openArray[turn];
+				announcementLabel.text = `Next: ${next}\nTurn: ${turn + 1}`;
+				announcementLabel.invalidate();
+				if (next in reverseCells) {
+					reverseCells[next].check();
+				}
+				turn++;
+			})
+			.wait(1000);
+
 	});
 
 	g.game.pushScene(scene);
