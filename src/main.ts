@@ -76,7 +76,7 @@ export function main(param: GameMainParameterObject): void {
 			}
 		}
 
-		// 1秒ごとにビンゴシートが開いていく仮アニメーション
+		// 数値発表アニメーション
 		const timeline = new Timeline(scene);
 		const announcementLabel = new al.Label({
 			scene: scene,
@@ -89,7 +89,6 @@ export function main(param: GameMainParameterObject): void {
 			width: 200,
 		});
 
-		// 数値発表アニメーション
 		let turn = 0;
 		timeline.create(announcementLabel, { loop: true })
 			.call(() => {
