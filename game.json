@@ -33,6 +33,11 @@
 			"type": "script",
 			"path": "script/_bootstrap.js",
 			"global": true
+		},
+		"progressBar": {
+			"type": "script",
+			"path": "script/progressBar.js",
+			"global": true
 		}
 	},
 	"environment": {

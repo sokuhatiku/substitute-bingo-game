@@ -3,6 +3,7 @@ export class BingoCell {
 	private root: g.E;
 	private background: g.FilledRect;
 	private label: g.Label;
+	private checkedColor: string;
 
 	private isChecked: boolean = false;
 
@@ -18,9 +19,12 @@ export class BingoCell {
 		y: number;
 		width: number;
 		height: number;
-		cssColor: string;
+		defaultColor: string;
+		checkedColor: string;
 		label: string;
 	}) {
+		this.checkedColor = params.checkedColor;
+
 		this.root = new g.E({
 			scene: params.scene,
 			parent: params.parent,
@@ -37,7 +41,7 @@ export class BingoCell {
 			y: 0,
 			width: params.width,
 			height: params.height,
-			cssColor: params.cssColor,
+			cssColor: params.defaultColor,
 		});
 
 		this.label = new g.Label({
@@ -57,7 +61,7 @@ export class BingoCell {
 
 	public check(): void {
 		this.isChecked = true;
-		this.background.cssColor = "blue";
+		this.background.cssColor = this.checkedColor;
 		this.background.modified();
 		this.label.textColor = "white";
 		this.label.invalidate();

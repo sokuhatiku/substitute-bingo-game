@@ -5,12 +5,10 @@ import { BingoCell } from "./game/bingoCell";
 import { NiconamaGameBridge } from "./niconamaGameBridge";
 import type { GameMainParameterObject } from "./parameterObject";
 import type { Layers } from "./utils/layers";
+import { ProgressBar } from "./progressBar";
 
 export function main(param: GameMainParameterObject): void {
-	let applicationTimeLimit = Infinity;
-	if (param.sessionParameter.totalTimeLimit) {
-		applicationTimeLimit = param.sessionParameter.totalTimeLimit;
-	}
+	const applicationTimeLimit = param.sessionParameter.totalTimeLimit ? param.sessionParameter.totalTimeLimit : Infinity;
 
 	const niconama = new NiconamaGameBridge();
 	const scene = new g.Scene({
@@ -46,9 +44,31 @@ export function main(param: GameMainParameterObject): void {
 		niconama.noticeScore(score);
 
 		// 以降はビジュアル面の実装
+
+		const progressBar = new ProgressBar({
+			scene: scene,
+			parent: layers.ui,
+			x: 0,
+			y: g.game.height - 20,
+			width: g.game.width,
+			height: 20,
+			cssColor: "red",
+		});
+		let elapsedFrames = 0;
+		scene.onUpdate.add(() => {
+			elapsedFrames++;
+			const elapsedTime = elapsedFrames / 30.0; // フレーム数から経過時間を計算
+			const progress = Math.min(elapsedTime / applicationTimeLimit, 1);
+			progressBar.setProgress(progress);
+		});
+		console.log("Time limit:", applicationTimeLimit);
+
 		// ビンゴシートのセルを生成
 		const cells: BingoCell[] = [];
 		const reverseCells: Record<number, BingoCell> = {}; // 数字からセルを逆引きするマップ
+		const cellSize = 90;
+		const offsetY = (g.game.height - cellSize * 5) / 2;
+		const offsetX = offsetY;
 		for (let i = 0; i < 5; i++) {
 			for (let j = 0; j < 5; j++) {
 				const number = userArray[i * 5 + j];
@@ -57,11 +77,12 @@ export function main(param: GameMainParameterObject): void {
 					scene: scene,
 					parent: layers.foreground,
 					font: font,
-					x: i * 60,
-					y: j * 60,
-					width: 60,
-					height: 60,
-					cssColor: "white",
+					x: offsetX + i * cellSize,
+					y: offsetY + j * cellSize,
+					width: cellSize,
+					height: cellSize,
+					defaultColor: "white",
+					checkedColor: "green",
 					label: isCenter ? "FREE" : number.toString(),
 				});
 
@@ -79,7 +100,7 @@ export function main(param: GameMainParameterObject): void {
 		const announcementLabel = new al.Label({
 			scene: scene,
 			parent: layers.ui,
-			x: 320,
+			x: 500,
 			y: 20,
 			font: font,
 			text: "",
