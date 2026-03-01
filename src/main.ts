@@ -195,7 +195,8 @@ function calculateScore(gameArray: number[], userArray: number[]): number {
 		for (let i = 0; i < lines.length; i++) {
 			const line = lines[i];
 			if (opened[line[0]] && opened[line[1]] && opened[line[2]] && opened[line[3]] && opened[line[4]]) {
-				return 100 - (turn + 1);
+				// ビンゴには最低4ターン必要なので、4ターンでのビンゴを100点とする
+				return 100 - (turn + 1 - 4);
 			}
 		}
 	}
