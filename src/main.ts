@@ -44,8 +44,6 @@ export function main(param: GameMainParameterObject): void {
 
 		// ニコ生ゲームにあらかじめスコアを通知
 		niconama.noticeScore(score);
-		console.log("Calculated Score:", score);
-
 
 		// 以降はビジュアル面の実装
 		// ビンゴシートのセルを生成
