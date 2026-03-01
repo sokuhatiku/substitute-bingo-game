@@ -3,7 +3,10 @@ const imageAssets = [
 ] as const;
 
 const audioAssets = [
-
+	"/audio/roulette",
+	"/audio/check",
+	"/audio/reach",
+	"/audio/bingo",
 ] as const;
 
 const textAssets = [] as const;

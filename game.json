@@ -38,6 +38,69 @@
 			"type": "script",
 			"path": "script/progressBar.js",
 			"global": true
+		},
+		"lotteryMachine": {
+			"type": "script",
+			"path": "script/game/lotteryMachine.js",
+			"global": true
+		},
+		"roulette": {
+			"type": "audio",
+			"path": "audio/roulette",
+			"systemId": "sound",
+			"duration": 2668,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"check": {
+			"type": "audio",
+			"path": "audio/check",
+			"systemId": "sound",
+			"duration": 1143,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"bingo": {
+			"type": "audio",
+			"path": "audio/bingo",
+			"systemId": "sound",
+			"duration": 4500,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"bingoAnnounce": {
+			"type": "script",
+			"path": "script/game/bingoAnnounce.js",
+			"global": true
+		},
+		"reach": {
+			"type": "audio",
+			"path": "audio/reach",
+			"systemId": "sound",
+			"duration": 1698,
+			"hint": {
+				"extensions": [
+					".m4a",
+					".ogg"
+				]
+			}
+		},
+		"joinButton": {
+			"type": "script",
+			"path": "script/game/joinButton.js",
+			"global": true
 		}
 	},
 	"environment": {
@@ -47,7 +110,7 @@
 				"ranking"
 			],
 			"preferredSessionParameters": {
-				"totalTimeLimit": 95
+				"totalTimeLimit": 90
 			}
 		}
 	},

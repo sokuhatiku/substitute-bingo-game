@@ -2,15 +2,10 @@ fs = require('fs');
 
 necessalyFiles = {
     audio: [
-        "bgm",
-        "pick",
-        "put",
-        "whistle_start",
-        "whistle_finish",
-        "ok",
-        "ng",
-        "count_up",
-        "count_finish",
+        "roulette",
+        "check",
+        "reach",
+        "bingo",
     ]
 }
 

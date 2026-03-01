@@ -3,5 +3,6 @@ export interface Layers {
 	foreground: g.E;
 	paricles: g.E;
 	ui: g.E;
+	important: g.E;
 	debugUi: g.E;
 }
