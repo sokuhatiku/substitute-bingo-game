@@ -39,7 +39,7 @@ export function main(param: GameMainParameterObject): void {
 		};
 
 		// ビンゴシートが開く順番を決める配列（ゲーム全体で同じ順番になるよう、ゲームの乱数を使う）
-		const openArray = generateBingoArray(g.game.random);
+		const openArray = generateBingoArray(param.random ?? g.game.random);
 		// ユーザーシート生成用の配列（ローカルの乱数を使う）
 		const userArray = generateBingoSheetArray(g.game.localRandom);
 
