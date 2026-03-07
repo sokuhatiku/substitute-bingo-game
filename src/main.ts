@@ -25,7 +25,7 @@ export function main(param: GameMainParameterObject): void {
 	const font = new g.DynamicFont({
 		game: g.game,
 		fontFamily: "sans-serif",
-		size: 15
+		size: 32
 	});
 
 	scene.onLoad.add(() => {
