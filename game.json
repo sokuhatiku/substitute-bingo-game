@@ -4,46 +4,6 @@
 	"fps": 30,
 	"main": "./script/_bootstrap.js",
 	"assets": {
-		"assetLoader": {
-			"type": "script",
-			"path": "script/assetLoader.js",
-			"global": true
-		},
-		"bingoCell": {
-			"type": "script",
-			"path": "script/game/bingoCell.js",
-			"global": true
-		},
-		"main": {
-			"type": "script",
-			"path": "script/main.js",
-			"global": true
-		},
-		"niconamaGameBridge": {
-			"type": "script",
-			"path": "script/niconamaGameBridge.js",
-			"global": true
-		},
-		"parameterObject": {
-			"type": "script",
-			"path": "script/parameterObject.js",
-			"global": true
-		},
-		"_bootstrap": {
-			"type": "script",
-			"path": "script/_bootstrap.js",
-			"global": true
-		},
-		"progressBar": {
-			"type": "script",
-			"path": "script/progressBar.js",
-			"global": true
-		},
-		"lotteryMachine": {
-			"type": "script",
-			"path": "script/game/lotteryMachine.js",
-			"global": true
-		},
 		"roulette": {
 			"type": "audio",
 			"path": "audio/roulette",
@@ -80,11 +40,6 @@
 				]
 			}
 		},
-		"bingoAnnounce": {
-			"type": "script",
-			"path": "script/game/bingoAnnounce.js",
-			"global": true
-		},
 		"reach": {
 			"type": "audio",
 			"path": "audio/reach",
@@ -97,9 +52,54 @@
 				]
 			}
 		},
+		"assetLoader": {
+			"type": "script",
+			"path": "script/assetLoader.js",
+			"global": true
+		},
+		"bingoAnnounce": {
+			"type": "script",
+			"path": "script/game/bingoAnnounce.js",
+			"global": true
+		},
+		"bingoCell": {
+			"type": "script",
+			"path": "script/game/bingoCell.js",
+			"global": true
+		},
 		"joinButton": {
 			"type": "script",
 			"path": "script/game/joinButton.js",
+			"global": true
+		},
+		"lotteryMachine": {
+			"type": "script",
+			"path": "script/game/lotteryMachine.js",
+			"global": true
+		},
+		"main": {
+			"type": "script",
+			"path": "script/main.js",
+			"global": true
+		},
+		"niconamaGameBridge": {
+			"type": "script",
+			"path": "script/niconamaGameBridge.js",
+			"global": true
+		},
+		"parameterObject": {
+			"type": "script",
+			"path": "script/parameterObject.js",
+			"global": true
+		},
+		"progressBar": {
+			"type": "script",
+			"path": "script/progressBar.js",
+			"global": true
+		},
+		"_bootstrap": {
+			"type": "script",
+			"path": "script/_bootstrap.js",
 			"global": true
 		}
 	},

@@ -11,9 +11,9 @@ import { ProgressBar } from "./progressBar";
 import type { Layers } from "./utils/layers";
 
 export function main(param: GameMainParameterObject): void {
-	// ゲーム全体の時間制限（秒）。ニコ生ゲームのセッションパラメータから取得する。制限がない場合はInfinityになる。
+	// ゲーム全体の時間制限（ミリ秒）。ニコ生ゲームのセッションパラメータから取得する。制限がない場合はInfinityになる。
 	// totalTimeLimitは秒数で与えられるので*1000してミリ秒に変換する
-	const applicationTimeLimit = param.sessionParameter.totalTimeLimit ? param.sessionParameter.totalTimeLimit * 1000 : Infinity;
+	const applicationTimeLimitMs = param.sessionParameter.totalTimeLimit ? param.sessionParameter.totalTimeLimit * 1000 : Infinity;
 
 	const niconama = new NiconamaGameBridge();
 	const scene = new g.Scene({
@@ -43,8 +43,7 @@ export function main(param: GameMainParameterObject): void {
 		// ユーザーシート生成用の配列（ローカルの乱数を使う）
 		const userArray = generateBingoSheetArray(g.game.localRandom);
 
-		// 以降はビジュアル面の実装
-
+		// 画面下に表示される進行状況バー
 		const progressBar = new ProgressBar({
 			scene: scene,
 			parent: layers.ui,
@@ -57,8 +56,8 @@ export function main(param: GameMainParameterObject): void {
 		let elapsedFrames = 0;
 		scene.onUpdate.add(() => {
 			elapsedFrames++;
-			const elapsedTime = elapsedFrames / 30.0; // フレーム数から経過時間を計算
-			const progress = Math.min(elapsedTime * 1000 / applicationTimeLimit, 1);
+			const elapsedTimeMs = elapsedFrames * 1000 / 30.0; // フレーム数から経過時間を計算
+			const progress = Math.min(elapsedTimeMs / applicationTimeLimitMs, 1);
 			progressBar.setProgress(progress);
 		});
 
@@ -97,6 +96,7 @@ export function main(param: GameMainParameterObject): void {
 			}
 		}
 
+		// ビンゴ判定用ラインの定義
 		lines.push(cells.slice(0, 5)); // 行
 		lines.push(cells.slice(5, 10));
 		lines.push(cells.slice(10, 15));
@@ -197,7 +197,7 @@ export function main(param: GameMainParameterObject): void {
 		// 抽選にかかる時間をゲームに与えられた時間から決定する
 		// もし与えられていない場合は1分あると仮定する
 		const maxTurns = 45; // 42ターンくらいで期待値50%のビンゴになるので、45ターンに設定しておけばだれかがビンゴする可能性が高い
-		const timePerTurn = (applicationTimeLimit !== Infinity ? applicationTimeLimit : 1000 * 60) / maxTurns;
+		const timePerTurn = (applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs : 1000 * 60) / maxTurns;
 		const rollingTime = timePerTurn / 2; // 数値がコロコロ変わる時間（ミリ秒）
 		const announceTime = timePerTurn / 2; // 数値が決まってから次のターンに移るまでの時間（ミリ秒）
 
@@ -291,9 +291,9 @@ function createLayerEntity(scene: g.Scene): g.E {
 /**
  * ビンゴゲームの一般的な仕様に基づいて、ビンゴシートの配列を生成する関数
  * 1-15がB列、16-30がI列、31-45がN列、46-60がG列、61-75がO列にランダムに配置される
- * @param generator
+ * @param random
  */
-function generateBingoSheetArray(generator: g.RandomGenerator): number[] {
+function generateBingoSheetArray(random: g.RandomGenerator): number[] {
 	const sheet: number[] = [];
 
 	// 各列ごとに15個の数字から5個をランダムに選ぶ
@@ -308,7 +308,7 @@ function generateBingoSheetArray(generator: g.RandomGenerator): number[] {
 
 		// Fisher-Yatesシャッフルで先頭5個をランダムに選ぶ
 		for (let i = candidates.length - 1; i > 0; i--) {
-			const j = Math.floor(generator.generate() * (i + 1));
+			const j = Math.floor(random.generate() * (i + 1));
 			const tmp = candidates[i];
 			candidates[i] = candidates[j];
 			candidates[j] = tmp;
@@ -327,7 +327,7 @@ function generateBingoSheetArray(generator: g.RandomGenerator): number[] {
  * 1から75までの数字をシャッフルして並べる
  * @returns シャッフルされた数字の配列（長さは75）
  */
-function generateBingoArray(generator: g.RandomGenerator): number[] {
+function generateBingoArray(random: g.RandomGenerator): number[] {
 	const array: number[] = [];
 	for (let i = 1; i <= 75; i++) {
 		array.push(i);
@@ -335,7 +335,7 @@ function generateBingoArray(generator: g.RandomGenerator): number[] {
 
 	// Fisher-Yatesシャッフル
 	for (let i = array.length - 1; i > 0; i--) {
-		const j = Math.floor(generator.generate() * (i + 1));
+		const j = Math.floor(random.generate() * (i + 1));
 		const tmp = array[i];
 		array[i] = array[j];
 		array[j] = tmp;
