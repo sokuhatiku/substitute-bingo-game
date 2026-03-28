@@ -146,8 +146,6 @@ export function main(param: GameMainParameterObject): void {
 			assetLoader: assetLoader,
 		});
 
-		let scoreBeforeJoined = 0;
-
 		// ゲームに参加するためのボタン
 		// （参加意思のないユーザーがスコアを獲得してしまいランキングに載ることを防ぐため）
 		const joinButton = new JoinButton({
@@ -159,7 +157,18 @@ export function main(param: GameMainParameterObject): void {
 			height: cellSize * 3 - 60,
 			font: font,
 		});
+
 		let hasJoined = false;
+		let scoreBeforeJoined = 0;
+		const noticeScore = (score: number): void => {
+			if (hasJoined) {
+				// ニコ生ゲームにスコアを通知
+				niconama.noticeScore(score);
+			} else {
+				// ゲームに参加していない場合はスコアを保存しておく
+				scoreBeforeJoined = score;
+			}
+		};
 		joinButton.onClick.add(() => {
 			if (!hasJoined) {
 				console.log("ユーザーがゲームに参加");
@@ -243,6 +252,8 @@ export function main(param: GameMainParameterObject): void {
 					if (bingoCount === 0) {
 						// ビンゴしてなければリーチが出たタイミングでリーチ音を鳴らす
 						reachSound.play();
+						// ビンゴ前のリーチは2点（参加賞が1点で、それより高くする）
+						noticeScore(2);
 					}
 				}
 				if (newBingoCount > bingoCount) {
@@ -254,14 +265,7 @@ export function main(param: GameMainParameterObject): void {
 						// ・ビンゴが出たのが早いほど高得点
 						// ・理論上最初のビンゴが出る4ターン目でビンゴすると100点になる
 						const score = 100 - (turn - 3);
-
-						if (hasJoined) {
-							// ニコ生ゲームにスコアを通知
-							niconama.noticeScore(score);
-						} else {
-							// ゲームに参加していない場合はスコアを保存しておく
-							scoreBeforeJoined = score;
-						}
+						noticeScore(score);
 					}
 				}
 				reachCount = newReachCount;
