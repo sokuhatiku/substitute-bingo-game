@@ -32,7 +32,7 @@ export function main(param: GameMainParameterObject): void {
 		const layers: Layers = {
 			background: createLayerEntity(scene),
 			foreground: createLayerEntity(scene),
-			paricles: createLayerEntity(scene),
+			particles: createLayerEntity(scene),
 			ui: createLayerEntity(scene),
 			important: createLayerEntity(scene),
 			debugUi: createLayerEntity(scene),
