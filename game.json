@@ -122,6 +122,11 @@
 			"type": "script",
 			"path": "script/uiElements/labeledValueBox.js",
 			"global": true
+		},
+		"config": {
+			"type": "script",
+			"path": "script/config.js",
+			"global": true
 		}
 	},
 	"environment": {

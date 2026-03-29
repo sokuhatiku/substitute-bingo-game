@@ -1,6 +1,7 @@
 import type { Tween } from "@akashic-extension/akashic-timeline";
 import { Timeline } from "@akashic-extension/akashic-timeline";
 import { allAssets, AssetLoader } from "./assetLoader";
+import { MAX_TURNS } from "./config";
 import { BingoAnnounce } from "./game/bingoAnnounce";
 import { BingoCell } from "./game/bingoCell";
 import { JoinButton } from "./game/joinButton";
@@ -212,8 +213,9 @@ export function main(param: GameMainParameterObject): void {
 
 		// 抽選にかかる時間をゲームに与えられた時間から決定する
 		// もし与えられていない場合は1分あると仮定する
-		const maxTurns = 42; // 42ターンくらいで期待値50%のビンゴになる
-		const timePerTurn = (applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs : 1000 * 60) / (maxTurns + 5);
+		const maxTurns = MAX_TURNS;
+		const outGameTimesMs = 1000 * 5; // ゲーム終了時に待機する秒数
+		const timePerTurn = (applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs - outGameTimesMs : 1000 * 60) / maxTurns;
 		const rollingTime = timePerTurn / 2; // 数値がコロコロ変わる時間（ミリ秒）
 		const announceTime = timePerTurn / 2; // 数値が決まってから次のターンに移るまでの時間（ミリ秒）
 
