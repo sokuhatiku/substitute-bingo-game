@@ -5,12 +5,12 @@ import { BingoAnnounce } from "./game/bingoAnnounce";
 import { BingoCell } from "./game/bingoCell";
 import { JoinButton } from "./game/joinButton";
 import { LotteryMachine } from "./game/lotteryMachine";
+import { RemainTurnSign } from "./game/remainTurnSign";
 import { Scoreboard } from "./game/scoreboard";
 import { NiconamaGameBridge } from "./niconamaGameBridge";
 import type { GameMainParameterObject } from "./parameterObject";
 import { ProgressBar } from "./progressBar";
 import type { Layers } from "./utils/layers";
-import { RemainTurnSign } from "./game/remainTurnSign";
 
 export function main(param: GameMainParameterObject): void {
 	// ゲーム全体の時間制限（ミリ秒）。ニコ生ゲームのセッションパラメータから取得する。制限がない場合はInfinityになる。
