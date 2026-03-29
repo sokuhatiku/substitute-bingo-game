@@ -292,7 +292,7 @@ export function main(param: GameMainParameterObject): void {
 						// ・ビンゴが出たのが早いほど高得点
 						// ・理論上最初のビンゴが出る4ターン目でビンゴすると100点になる
 						const score = 100 - (turn - 3);
-						noticeScore(score, `${turn}ターンでビンゴ！`);
+						noticeScore(score, `${turn+1}ターン目でビンゴ！`);
 					}
 				}
 				reachCount = newReachCount;
