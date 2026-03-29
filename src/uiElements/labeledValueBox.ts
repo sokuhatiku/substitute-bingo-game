@@ -95,6 +95,9 @@ export class LabeledValueBox {
 	}
 
 	public setValue(value: string): void {
+		if (this.valueLabel.text === value) {
+			return;
+		}
 		this.valueLabel.text = value;
 		this.valueLabel.invalidate();
 
