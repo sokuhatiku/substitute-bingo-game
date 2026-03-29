@@ -22,6 +22,7 @@ export class Scoreboard {
 			y: params.y,
 		});
 
+		// 背景
 		const background = new g.FilledRect({
 			scene: params.scene,
 			parent: this.root,
@@ -32,7 +33,8 @@ export class Scoreboard {
 			cssColor: "rgba(0, 0, 0, 0.5)",
 		});
 
-		const headLabel = new g.Label({
+		// "点数"のラベル
+		new g.Label({
 			scene: params.scene,
 			parent: background,
 			x: 10,
@@ -47,6 +49,7 @@ export class Scoreboard {
 			widthAutoAdjust: false,
 		});
 
+		// 点数表示の背景
 		const scoreFieldRect = new g.FilledRect({
 			scene: params.scene,
 			parent: background,
@@ -57,6 +60,7 @@ export class Scoreboard {
 			cssColor: "white",
 		});
 
+		// 点数表示のラベル
 		this.scoreLabel = new g.Label({
 			scene: params.scene,
 			parent: scoreFieldRect,
@@ -71,6 +75,7 @@ export class Scoreboard {
 			widthAutoAdjust: false,
 		});
 
+		// 点数の理由を表示するメッセージボックス
 		this.messageBox = new MessageBox({
 			scene: params.scene,
 			parent: this.root,
