@@ -69,8 +69,8 @@ export function main(param: GameMainParameterObject): void {
 		const lines: BingoCell[][] = []; // ビンゴ判定用のライン（行5本、列5本、対角線2本の計12本）
 
 		const cellSize = 90;
-		const offsetY = (g.game.height - cellSize * 5) / 2;
-		const offsetX = offsetY;
+		const offsetX = (g.game.height - cellSize * 5) / 2;
+		const offsetY = offsetX + 40;
 		for (let i = 0; i < 5; i++) {
 			for (let j = 0; j < 5; j++) {
 				const number = userArray[i * 5 + j];
