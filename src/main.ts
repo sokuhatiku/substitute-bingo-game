@@ -231,8 +231,8 @@ export function main(param: GameMainParameterObject): void {
 
 		// 抽選にかかる時間をゲームに与えられた時間から決定する
 		// もし与えられていない場合は1分あると仮定する
-		const maxTurns = 45; // 42ターンくらいで期待値50%のビンゴになるので、45ターンに設定しておけばだれかがビンゴする可能性が高い
-		const timePerTurn = (applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs : 1000 * 60) / maxTurns;
+		const maxTurns = 42; // 42ターンくらいで期待値50%のビンゴになる
+		const timePerTurn = (applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs : 1000 * 60) / (maxTurns + 5);
 		const rollingTime = timePerTurn / 2; // 数値がコロコロ変わる時間（ミリ秒）
 		const announceTime = timePerTurn / 2; // 数値が決まってから次のターンに移るまでの時間（ミリ秒）
 
@@ -300,7 +300,15 @@ export function main(param: GameMainParameterObject): void {
 
 				turn++;
 			})
-			.wait(announceTime);
+			.wait(announceTime)
+			.call(() => {
+				// ターン制限を超えたら終了
+				if (turn >= maxTurns) {
+					if (lotteryAnimation) {
+						lotteryAnimation.cancel();
+					}
+				}
+			});
 
 	});
 
