@@ -10,6 +10,7 @@ import { NiconamaGameBridge } from "./niconamaGameBridge";
 import type { GameMainParameterObject } from "./parameterObject";
 import { ProgressBar } from "./progressBar";
 import type { Layers } from "./utils/layers";
+import { RemainTurnSign } from "./game/remainTurnSign";
 
 export function main(param: GameMainParameterObject): void {
 	// ゲーム全体の時間制限（ミリ秒）。ニコ生ゲームのセッションパラメータから取得する。制限がない場合はInfinityになる。
@@ -134,10 +135,19 @@ export function main(param: GameMainParameterObject): void {
 			cssColor: "lightGreen",
 		});
 
+		// 残りターン表示
+		const remainTurnSign = new RemainTurnSign({
+			x: g.game.width / 2 - 25,
+			y: g.game.height - 350,
+			font: font,
+			scene: scene,
+			layers: layers,
+		});
+
 		// スコアボード
 		const scoreboard = new Scoreboard({
 			x: g.game.width / 2 - 25,
-			y: g.game.height - 200 - 20,
+			y: g.game.height - 220,
 			font: font,
 			scene: scene,
 			layers: layers,
@@ -241,6 +251,7 @@ export function main(param: GameMainParameterObject): void {
 				}
 				const next = openArray[turn];
 				lotteryMachine.announce(next, rollingTime);
+				remainTurnSign.setRemainTurn(maxTurns - turn - 1);
 			})
 			.wait(rollingTime)
 			.call(() => {
