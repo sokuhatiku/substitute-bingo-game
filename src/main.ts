@@ -9,7 +9,6 @@ import { RemainTurnSign } from "./game/remainTurnSign";
 import { Scoreboard } from "./game/scoreboard";
 import { NiconamaGameBridge } from "./niconamaGameBridge";
 import type { GameMainParameterObject } from "./parameterObject";
-import { ProgressBar } from "./progressBar";
 import type { Layers } from "./utils/layers";
 
 export function main(param: GameMainParameterObject): void {
@@ -44,24 +43,6 @@ export function main(param: GameMainParameterObject): void {
 		const openArray = generateBingoArray(param.random ?? g.game.random);
 		// ユーザーシート生成用の配列（ローカルの乱数を使う）
 		const userArray = generateBingoSheetArray(g.game.localRandom);
-
-		// 画面下に表示される進行状況バー
-		const progressBar = new ProgressBar({
-			scene: scene,
-			parent: layers.ui,
-			x: 0,
-			y: g.game.height - 20,
-			width: g.game.width,
-			height: 20,
-			cssColor: "red",
-		});
-		let elapsedFrames = 0;
-		scene.onUpdate.add(() => {
-			elapsedFrames++;
-			const elapsedTimeMs = elapsedFrames * 1000 / 30.0; // フレーム数から経過時間を計算
-			const progress = Math.min(elapsedTimeMs / applicationTimeLimitMs, 1);
-			progressBar.setProgress(progress);
-		});
 
 		// ビンゴシートのセルを生成
 		const cells: BingoCell[] = []; // 左上から縦にカウントし0-24の順番でセルを格納する配列

@@ -92,11 +92,6 @@
 			"path": "script/parameterObject.js",
 			"global": true
 		},
-		"progressBar": {
-			"type": "script",
-			"path": "script/progressBar.js",
-			"global": true
-		},
 		"_bootstrap": {
 			"type": "script",
 			"path": "script/_bootstrap.js",
