@@ -113,14 +113,14 @@
 			"width": 96,
 			"height": 96
 		},
-		"messagebox": {
-			"type": "script",
-			"path": "script/game/messagebox.js",
-			"global": true
-		},
 		"remainTurnSign": {
 			"type": "script",
 			"path": "script/game/remainTurnSign.js",
+			"global": true
+		},
+		"messagebox": {
+			"type": "script",
+			"path": "script/uiElements/messagebox.js",
 			"global": true
 		}
 	},

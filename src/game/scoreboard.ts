@@ -1,6 +1,6 @@
 import type { AssetLoader } from "../assetLoader";
+import { MessageBox } from "../uiElements/messagebox";
 import type { Layers } from "../utils/layers";
-import { MessageBox } from "./messagebox";
 
 export class Scoreboard {
 	private root: g.E;
