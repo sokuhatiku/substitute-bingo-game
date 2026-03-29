@@ -24,4 +24,8 @@ export class RemainTurnSign {
 	public setRemainTurn(turn: number): void {
 		this.valueBox.setValue(turn.toString());
 	}
+
+	public setFinished(): void {
+		this.valueBox.setValue("終了");
+	}
 }

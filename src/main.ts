@@ -306,6 +306,7 @@ export function main(param: GameMainParameterObject): void {
 				if (turn >= maxTurns) {
 					if (lotteryAnimation) {
 						lotteryAnimation.cancel();
+						remainTurnSign.setFinished();
 					}
 				}
 			});
