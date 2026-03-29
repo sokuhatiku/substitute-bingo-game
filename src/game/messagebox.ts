@@ -1,3 +1,4 @@
+import { Easing, Timeline } from "@akashic-extension/akashic-timeline";
 import type { AssetLoader } from "../assetLoader";
 
 export class MessageBox {
@@ -35,6 +36,8 @@ export class MessageBox {
 			parent: params.parent,
 			x: params.x,
 			y: params.y,
+			anchorX: 0,
+			anchorY: 1,
 			width: params.width,
 			height: params.height,
 		});
@@ -69,6 +72,10 @@ export class MessageBox {
 			widthAutoAdjust: false,
 		});
 
+		const timeline = new Timeline(params.scene);
+		timeline.create(this.root, { loop: true })
+			.scaleTo(1.05, 1.05, 500, Easing.easeInOutSine)
+			.scaleTo(1, 1, 500, Easing.easeInOutSine);
 	}
 
 	public hide(): void {
