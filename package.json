@@ -13,7 +13,7 @@
     "start": "akashic sandbox .",
     "export": "akashic export zip --nicolive --force",
     "export:50": "node scripts/export-variant.cjs 42 game-50.zip 90",
-    "export:100": "node scripts/export-variant.cjs 75 game-100.zip 160",
+    "export:100": "node scripts/export-variant.cjs 71 game-100.zip 160",
     "export:all": "npm run export:50 && npm run export:100",
     "export-web": "akashic export html --magnify --bundle --hash-filename --output ./web",
     "develop": "run-p -l start build:watch update:watch",

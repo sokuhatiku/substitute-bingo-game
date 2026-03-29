@@ -214,30 +214,33 @@ export function main(param: GameMainParameterObject): void {
 		// 抽選にかかる時間をゲームに与えられた時間から決定する
 		// もし与えられていない場合は1分あると仮定する
 		const maxTurns = MAX_TURNS;
-		const outGameTimesMs = 1000 * 5; // ゲーム終了時に待機する秒数
-		const timePerTurn = (applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs - outGameTimesMs : 1000 * 60) / maxTurns;
-		const rollingTime = timePerTurn / 2; // 数値がコロコロ変わる時間（ミリ秒）
-		const announceTime = timePerTurn / 2; // 数値が決まってから次のターンに移るまでの時間（ミリ秒）
+		const msPerFrame = 1000 / g.game.fps;
+		const marginMs = 5000 + maxTurns * msPerFrame * 2; // 待機5秒 + ターン数に比例したマージン
+		const gameTimeMs = applicationTimeLimitMs !== Infinity ? applicationTimeLimitMs - marginMs : 1000 * 60;
+		// 1ターンあたりのフレーム数を切り捨てることで、フレーム丸めによる超過を防ぐ
+		const framesPerTurn = Math.floor(gameTimeMs / maxTurns / msPerFrame);
+		const rollingFrames = Math.floor(framesPerTurn / 2);
+		const announceFrames = framesPerTurn - rollingFrames;
+		const rollingTimeMs = rollingFrames * msPerFrame;
+		const announceTimeMs = announceFrames * msPerFrame;
 
 		lotteryAnimation = timeline.create(lotteryAnimationEntity, { loop: true })
 			.call(() => {
-				if (turn === openArray.length) {
+				// ターン制限または配列の終端に達したら終了
+				if (turn >= maxTurns || turn >= openArray.length) {
 					if (lotteryAnimation) {
 						lotteryAnimation.cancel();
-					}
-					return;
-				} else if (turn > openArray.length) {
-					if (lotteryAnimation) {
-						lotteryAnimation.cancel();
+						remainTurnSign.setFinished();
 					}
 					return;
 				}
 				const next = openArray[turn];
-				lotteryMachine.announce(next, rollingTime);
+				lotteryMachine.announce(next, rollingTimeMs);
 				remainTurnSign.setRemainTurn(maxTurns - turn - 1);
 			})
-			.wait(rollingTime)
+			.wait(rollingTimeMs)
 			.call(() => {
+				if (turn >= maxTurns || turn >= openArray.length) return;
 				const next = openArray[turn];
 				if (next in reverseCells) {
 					reverseCells[next].check();
@@ -283,16 +286,7 @@ export function main(param: GameMainParameterObject): void {
 
 				turn++;
 			})
-			.wait(announceTime)
-			.call(() => {
-				// ターン制限を超えたら終了
-				if (turn >= maxTurns) {
-					if (lotteryAnimation) {
-						lotteryAnimation.cancel();
-						remainTurnSign.setFinished();
-					}
-				}
-			});
+			.wait(announceTimeMs);
 
 	});
 
