@@ -1,5 +1,5 @@
 const imageAssets = [
-
+	"/image/message_box.png",
 ] as const;
 
 const audioAssets = [

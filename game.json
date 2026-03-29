@@ -101,6 +101,22 @@
 			"type": "script",
 			"path": "script/_bootstrap.js",
 			"global": true
+		},
+		"scoreboard": {
+			"type": "script",
+			"path": "script/game/scoreboard.js",
+			"global": true
+		},
+		"message_box": {
+			"type": "image",
+			"path": "image/message_box.png",
+			"width": 96,
+			"height": 96
+		},
+		"messagebox": {
+			"type": "script",
+			"path": "script/game/messagebox.js",
+			"global": true
 		}
 	},
 	"environment": {

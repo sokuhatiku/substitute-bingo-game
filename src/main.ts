@@ -5,6 +5,7 @@ import { BingoAnnounce } from "./game/bingoAnnounce";
 import { BingoCell } from "./game/bingoCell";
 import { JoinButton } from "./game/joinButton";
 import { LotteryMachine } from "./game/lotteryMachine";
+import { Scoreboard } from "./game/scoreboard";
 import { NiconamaGameBridge } from "./niconamaGameBridge";
 import type { GameMainParameterObject } from "./parameterObject";
 import { ProgressBar } from "./progressBar";
@@ -133,6 +134,16 @@ export function main(param: GameMainParameterObject): void {
 			cssColor: "lightGreen",
 		});
 
+		// スコアボード
+		const scoreboard = new Scoreboard({
+			x: g.game.width / 2 - 25,
+			y: g.game.height - 200 - 20,
+			font: font,
+			scene: scene,
+			layers: layers,
+			assetLoader: assetLoader,
+		});
+
 		// ビンゴ時のアナウンス
 		const bingoAnnounce = new BingoAnnounce({
 			scene: scene,
@@ -159,15 +170,20 @@ export function main(param: GameMainParameterObject): void {
 		});
 
 		let hasJoined = false;
-		let scoreBeforeJoined = 0;
-		const noticeScore = (score: number): void => {
+		const scoreBeforeJoined = {
+			value: 0,
+			reason: "",
+		};
+		const noticeScore = (score: number, reason: string): void => {
 			if (hasJoined) {
 				// ニコ生ゲームにスコアを通知
 				niconama.noticeScore(score);
 			} else {
 				// ゲームに参加していない場合はスコアを保存しておく
-				scoreBeforeJoined = score;
+				scoreBeforeJoined.value = score;
+				scoreBeforeJoined.reason = reason;
 			}
+			scoreboard.setScore(score, reason);
 		};
 		joinButton.onClick.add(() => {
 			if (!hasJoined) {
@@ -175,13 +191,13 @@ export function main(param: GameMainParameterObject): void {
 				hasJoined = true;
 				joinButton.hide();
 
-				// ゲームに参加したタイミングで既にスコアを獲得していた場合は、そのスコアをニコ生ゲームに通知する
-				if (scoreBeforeJoined > 0) {
-					niconama.noticeScore(scoreBeforeJoined);
+				// ゲームに参加したタイミングで既にスコアを獲得していた場合は、そのスコアを改めてnoticeScoreしてニコ生ゲームに通知する
+				if (scoreBeforeJoined.value > 0) {
+					noticeScore(scoreBeforeJoined.value, scoreBeforeJoined.reason);
 				} else {
 					// スコア0点ではランキングに載らないため、1点だけ追加しておく
 					// ビンゴを1回でもした場合は100-75+4=29点以上になるので、スコア計算式上は影響がない
-					niconama.noticeScore(1);
+					noticeScore(1, "参加賞！");
 				}
 			}
 		});
@@ -253,7 +269,7 @@ export function main(param: GameMainParameterObject): void {
 						// ビンゴしてなければリーチが出たタイミングでリーチ音を鳴らす
 						reachSound.play();
 						// ビンゴ前のリーチは2点（参加賞が1点で、それより高くする）
-						noticeScore(2);
+						noticeScore(2, "リーチ！");
 					}
 				}
 				if (newBingoCount > bingoCount) {
@@ -265,7 +281,7 @@ export function main(param: GameMainParameterObject): void {
 						// ・ビンゴが出たのが早いほど高得点
 						// ・理論上最初のビンゴが出る4ターン目でビンゴすると100点になる
 						const score = 100 - (turn - 3);
-						noticeScore(score);
+						noticeScore(score, `${turn}ターンでビンゴ！`);
 					}
 				}
 				reachCount = newReachCount;
