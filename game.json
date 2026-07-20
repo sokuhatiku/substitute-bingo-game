@@ -127,6 +127,21 @@
 			"type": "script",
 			"path": "script/config.js",
 			"global": true
+		},
+		"bingoProbability": {
+			"type": "script",
+			"path": "script/game/bingoProbability.js",
+			"global": true
+		},
+		"statisticsPanel": {
+			"type": "script",
+			"path": "script/game/statisticsPanel.js",
+			"global": true
+		},
+		"chartScale": {
+			"type": "script",
+			"path": "script/utils/chartScale.js",
+			"global": true
 		}
 	},
 	"environment": {

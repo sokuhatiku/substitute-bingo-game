@@ -4,10 +4,12 @@ import { allAssets, AssetLoader } from "./assetLoader";
 import { MAX_TURNS } from "./config";
 import { BingoAnnounce } from "./game/bingoAnnounce";
 import { BingoCell } from "./game/bingoCell";
+import { calculateBingoProbabilityTable } from "./game/bingoProbability";
 import { JoinButton } from "./game/joinButton";
 import { LotteryMachine } from "./game/lotteryMachine";
 import { RemainTurnSign } from "./game/remainTurnSign";
 import { Scoreboard } from "./game/scoreboard";
+import { StatisticsPanel } from "./game/statisticsPanel";
 import { NiconamaGameBridge } from "./niconamaGameBridge";
 import type { GameMainParameterObject } from "./parameterObject";
 import type { Layers } from "./utils/layers";
@@ -104,6 +106,19 @@ export function main(param: GameMainParameterObject): void {
 			height: 50,
 			font: font,
 			assetLoader: assetLoader,
+		});
+
+		// 確率統計パネル
+		// シート背景より先にbackgroundレイヤーへ追加することで、閉じている間はシートの裏に隠れる（同一親内はappend順に描画されるため、この順序を変えないこと）
+		const statisticsPanel = new StatisticsPanel({
+			scene: scene,
+			parent: layers.background,
+			font: font,
+			x: offsetX - 5,
+			y: offsetY - 10 - 50 - 20,
+			openX: offsetX + cellSize * 5 + 15,
+			maxTurns: MAX_TURNS,
+			table: calculateBingoProbabilityTable(MAX_TURNS),
 		});
 
 		// ビンゴシートの背景
@@ -237,6 +252,8 @@ export function main(param: GameMainParameterObject): void {
 				const next = openArray[turn];
 				lotteryMachine.announce(next, rollingTimeMs);
 				remainTurnSign.setRemainTurn(maxTurns - turn - 1);
+				// 統計パネルのターン表示は、抽選のローリングが始まった時点でこのターンへ進める
+				statisticsPanel.setCurrentTurn(turn + 1);
 			})
 			.wait(rollingTimeMs)
 			.call(() => {
@@ -274,6 +291,8 @@ export function main(param: GameMainParameterObject): void {
 					if (bingoCount === 0) {
 						// 最初のビンゴが出たタイミングでビンゴアナウンス
 						bingoAnnounce.announce();
+						// 統計パネルにビンゴしたターンを記録
+						statisticsPanel.setBingoTurn(turn + 1);
 						// スコア計算式:
 						// ・ビンゴが出たのが早いほど高得点
 						// ・理論上最初のビンゴが出る4ターン目でビンゴすると100点になる
