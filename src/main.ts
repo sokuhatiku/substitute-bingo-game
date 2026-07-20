@@ -279,6 +279,8 @@ export function main(param: GameMainParameterObject): void {
 				}
 				if (newReachCount > reachCount) {
 					console.log("Reach! Total:", newReachCount);
+					// 統計パネルに初リーチのターンを記録（2回目以降の呼び出しはパネル側で無視される）
+					statisticsPanel.setReachTurn(turn + 1);
 					if (bingoCount === 0) {
 						// ビンゴしてなければリーチが出たタイミングでリーチ音を鳴らす
 						reachSound.play();
