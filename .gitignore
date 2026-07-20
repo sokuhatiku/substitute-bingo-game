@@ -3,6 +3,7 @@ node_modules
 /game
 /web
 coverage
-game.zip
+game*.zip
 /audio/*.m4a
 /audio/*.ogg
+background.png
